@@ -1,0 +1,27 @@
+services:
+  webapp:
+    image: martenbe/webapp
+    depends_on:
+      - db
+    environment:
+      - MONGO_URL=mongodb://db
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./database/:/app/database"
+
+  db:
+    image: mongo:latest
+    volumes:
+      - "dbvolume:/data/db"
+
+  test:
+    image: martenbe/webapp
+    depends_on:
+      - webapp
+    environment:
+      - API_URL=http://webapp:3000
+    entrypoint: ["yarn", "test", "test.spec.js"]
+
+volumes:
+  dbvolume:
